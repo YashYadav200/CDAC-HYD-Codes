@@ -1,0 +1,4 @@
+1. Node is a JS runtime platform
+2. Created with C++ and Javascript
+3. Runs on the V8 engine
+4. Created by Ryan Dhal

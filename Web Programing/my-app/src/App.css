@@ -1,0 +1,68 @@
+/* GLOBAL STYLING */
+body {
+  margin: 0;
+  padding: 0;
+  background: #f2f4f7;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.App {
+  text-align: center;
+  padding: 20px;
+}
+
+/* HEADING */
+.App h2 {
+  color: #222;
+  margin-bottom: 20px;
+  font-size: 26px;
+}
+
+/* CARD CONTAINER */
+.card {
+  background: #fff;
+  padding: 20px;
+  margin: 20px auto;
+  width: 350px;
+  border-radius: 14px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  transition: 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-3px);
+}
+
+/* INPUT FIELDS */
+input {
+  width: 90%;
+  padding: 10px;
+  margin-top: 8px;
+  margin-bottom: 15px;
+  border-radius: 8px;
+  border: 1px solid #aaa;
+  font-size: 16px;
+}
+
+/* BUTTONS */
+button {
+  padding: 10px 18px;
+  margin: 8px;
+  border: none;
+  background: #0066ff;
+  color: white;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 15px;
+  transition: 0.2s ease-in-out;
+}
+
+button:hover {
+  background: #0047b3;
+}
+
+/* PARAGRAPHS */
+p {
+  font-size: 16px;
+  margin: 10px 0;
+}

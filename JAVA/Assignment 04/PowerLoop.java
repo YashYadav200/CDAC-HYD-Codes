@@ -1,0 +1,10 @@
+import java.util.Scanner;
+class PowerLoop {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        System.out.println("Enter base and exponent:");
+        int base = sc.nextInt(), exp = sc.nextInt(), result = 1;
+        for(int i = 0; i < exp; i++) result *= base;
+        System.out.println("Power: " + result);
+    }
+}

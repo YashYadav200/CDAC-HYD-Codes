@@ -1,0 +1,243 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Chrome Dino - Simple Clone</title>
+  <style>
+    html,body{height:100%;margin:0;background:#f7f7f7;font-family:Arial}
+    .wrap{display:flex;align-items:center;justify-content:center;height:100%}
+    canvas{background:#fff;border:1px solid #e3e3e3;box-shadow:0 6px 18px rgba(0,0,0,0.06)}
+    .info{position:fixed;left:18px;top:12px;color:#666;font-size:13px}
+    .hint{position:fixed;right:18px;top:12px;color:#666;font-size:13px}
+  </style>
+</head>
+<body>
+  <div class="info">Press <strong>Space</strong> or <strong>Up</strong> to jump • <strong>Down</strong> to duck</div>
+  <div class="hint">Score: <span id="score">0</span></div>
+  <div class="wrap">
+    <canvas id="game" width="800" height="200"></canvas>
+  </div>
+
+<script>
+/*
+ Simple Chrome Dino clone (single-file)
+ Controls:
+  - Space / ArrowUp => jump
+  - ArrowDown => duck
+  - Click or Tap => jump
+
+ Features:
+  - Running dino drawn with canvas shapes
+  - Obstacles (cacti) that appear randomly
+  - Score counter and speed increase over time
+  - Restart after game over
+*/
+
+const canvas = document.getElementById('game');
+const ctx = canvas.getContext('2d');
+const scoreEl = document.getElementById('score');
+
+let width = canvas.width;
+let height = canvas.height;
+
+// Game state
+let running = false;
+let gameOver = false;
+let speed = 6; // base ground speed
+let gravity = 0.6;
+let score = 0;
+let spawnTimer = 0;
+let obstacleGap = 90; // min gap
+
+// Dino player
+const dino = {
+  x: 50,
+  y: height - 50,
+  w: 44,
+  h: 44,
+  vy: 0,
+  jumping: false,
+  ducking: false
+};
+
+// Obstacles array
+const obstacles = [];
+
+function reset(){
+  running = true;
+  gameOver = false;
+  speed = 6;
+  score = 0;
+  spawnTimer = 0;
+  obstacles.length = 0;
+  dino.y = height - 50;
+  dino.vy = 0;
+  dino.jumping = false;
+  dino.ducking = false;
+}
+
+function spawnObstacle(){
+  // simple cactus obstacle
+  const h = 20 + Math.random()*40;
+  const w = 12 + Math.random()*18;
+  obstacles.push({
+    x: width + 20,
+    y: height - 26 - (h-20),
+    w: w,
+    h: h
+  });
+}
+
+function update(){
+  if(!running) return;
+  // update dino
+  if(dino.jumping){
+    dino.vy += gravity;
+    dino.y += dino.vy;
+    if(dino.y >= height - 50){
+      dino.y = height - 50;
+      dino.vy = 0;
+      dino.jumping = false;
+    }
+  }
+  // update obstacles
+  for(let i = obstacles.length-1; i>=0; i--){
+    const o = obstacles[i];
+    o.x -= speed;
+    // collision
+    const dinoBox = {x:dino.x, y:dino.y, w:dino.w, h:dino.ducking?dino.h/2:dino.h};
+    if(rectIntersect(dinoBox, o)){
+      running = false;
+      gameOver = true;
+    }
+    if(o.x + o.w < -50) obstacles.splice(i,1);
+  }
+
+  // spawn logic
+  spawnTimer += 1;
+  if(spawnTimer > 60 + Math.random()*80){
+    spawnObstacle();
+    spawnTimer = 0;
+  }
+
+  // scoring and difficulty
+  score += 1;
+  if(score % 200 === 0) speed += 0.5; // speed up every 200 points
+
+  scoreEl.textContent = Math.floor(score/10);
+}
+
+function rectIntersect(a,b){
+  return !(a.x + a.w < b.x || a.x > b.x + b.w || a.y + a.h < b.y || a.y > b.y + b.h);
+}
+
+function draw(){
+  // clear
+  ctx.clearRect(0,0,width,height);
+
+  // ground
+  ctx.fillStyle = '#f2f2f2';
+  ctx.fillRect(0, height - 20, width, 20);
+  ctx.strokeStyle = '#e0e0e0';
+  ctx.beginPath();
+  for(let i = 0; i < width; i += 20){
+    ctx.moveTo(i, height-20);
+    ctx.lineTo(i+10, height-18);
+  }
+  ctx.stroke();
+
+  // draw dino (simple shapes)
+  ctx.save();
+  ctx.translate(dino.x, dino.y);
+
+  // body
+  ctx.fillStyle = '#222';
+  const dh = dino.ducking ? dino.h/2 : dino.h;
+  ctx.fillRect(0, 0, dino.w, dh);
+
+  // eye
+  ctx.fillStyle = '#fff';
+  ctx.fillRect(dino.w - 12, 8, 6, 6);
+
+  // leg (simple animation)
+  ctx.fillStyle = '#111';
+  const legY = (dino.jumping)? dh - 6 : dh - 2;
+  ctx.fillRect(8, legY, 8, 6);
+
+  ctx.restore();
+
+  // draw obstacles
+  ctx.fillStyle = '#117a00';
+  for(const o of obstacles){
+    ctx.fillRect(o.x, o.y, o.w, o.h);
+    // little cactus details
+    ctx.fillStyle = '#0f6300';
+    ctx.fillRect(o.x+Math.max(2, o.w-6), o.y+4, 2, 8);
+    ctx.fillStyle = '#117a00';
+  }
+
+  // game over text
+  if(gameOver){
+    ctx.fillStyle = 'rgba(0,0,0,0.7)';
+    ctx.font = '24px Arial';
+    ctx.fillText('GAME OVER - Press Space to Restart', width/2 - 200, height/2);
+  }
+}
+
+function loop(){
+  update();
+  draw();
+  requestAnimationFrame(loop);
+}
+
+// input
+window.addEventListener('keydown', (e) => {
+  if(e.code === 'Space' || e.code === 'ArrowUp'){
+    e.preventDefault();
+    if(gameOver){ reset(); return; }
+    jump();
+  }
+  if(e.code === 'ArrowDown'){
+    e.preventDefault();
+    duck(true);
+  }
+});
+window.addEventListener('keyup', (e) => {
+  if(e.code === 'ArrowDown') duck(false);
+});
+
+canvas.addEventListener('click', ()=>{
+  if(gameOver){ reset(); return; }
+  jump();
+});
+
+// touch support
+window.addEventListener('touchstart', (e)=>{
+  e.preventDefault();
+  if(gameOver){ reset(); return; }
+  jump();
+}, {passive:false});
+
+function jump(){
+  if(!dino.jumping){
+    dino.jumping = true;
+    dino.vy = -12; // jump impulse
+  }
+}
+function duck(on){
+  dino.ducking = on;
+}
+
+// handle resize-friendly canvas (optional)
+function fitCanvas(){
+  // keep canvas at original internal size but scale visually if needed
+}
+
+// start
+reset();
+loop();
+
+</script>
+</body>
+</html>

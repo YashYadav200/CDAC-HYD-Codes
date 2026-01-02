@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>All Students</title>
+</head>
+<body>
+    <h2>All Students</h2>
+    <button onclick="loadStudents()">Load Students</button>
+
+    <br><br>
+
+    <table border="1" cellpadding="10">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Course</th>
+            </tr>
+        </thead>
+        <tbody id="studTable"></tbody>
+    </table>
+
+    <script>
+        function loadStudents() {
+            fetch("http://localhost:3000/students")
+                .then(res => res.json())
+                .then(data => {
+                    let rows = "";
+                    data.forEach(stu => {
+                        rows += `<tr>
+                                    <td>${stu.sid}</td>
+                                    <td>${stu.sname}</td>
+                                    <td>${stu.course}</td>
+                                </tr>`;
+                    });
+                    document.getElementById("studTable").innerHTML = rows;
+                });
+        }
+    </script>
+</body>
+</html>

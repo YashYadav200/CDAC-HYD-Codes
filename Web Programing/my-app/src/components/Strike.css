@@ -1,0 +1,49 @@
+.container {
+  width: 350px;
+  margin: 40px auto;
+  padding: 25px;
+  border-radius: 12px;
+  background: #f7f7f7;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  font-family: Arial, sans-serif;
+}
+
+h2 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+label {
+  font-weight: bold;
+}
+
+input {
+  width: 90%;
+  padding: 10px;
+  margin-top: 8px;
+  margin-bottom: 15px;
+  border-radius: 8px;
+  border: 1px solid #aaa;
+  font-size: 16px;
+}
+
+button {
+  padding: 10px 18px;
+  margin-right: 10px;
+  border: none;
+  background: #007bff;
+  color: white;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 15px;
+  transition: 0.3s;
+}
+
+button:hover {
+  background: #005ecb;
+}
+
+p {
+  font-size: 17px;
+  margin: 10px 0;
+}
